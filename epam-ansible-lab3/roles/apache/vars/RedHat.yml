@@ -1,0 +1,9 @@
+---
+apache_package: httpd
+apache_package_state: latest
+apache_service: httpd
+apache_service_state: started
+apache_service_enabled: yes
+apache_daemon: httpd
+apache_user: apache
+apache_group: apache

@@ -1,0 +1,32 @@
+# specify the api version to use
+# Deployment object are in the apps/v1 API group
+apiVersion: apps/v1
+# tell Kubernetes we are defining a Deployment object
+kind: Deployment
+# give a name and labels
+metadata:
+  name: hello-deploy
+# anything below .spec relates to Pod
+# anything nested below .spec.template relates to Pod template that Deployment will manage
+# in this example the Pod template defines a single container
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: hello-world
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - name: hello-pod
+          image: nigelpoulton/k8sbook:latest
+          ports:
+          - containerPort: 8080

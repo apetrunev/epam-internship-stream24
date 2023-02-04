@@ -1,0 +1,33 @@
+---
+- name: Playbook for lab1 task 1
+  hosts: node1.example.com
+  remote_user: ansible
+  become: yes
+  tasks:
+    - name: Installing httpd
+      ansible.builtin.yum:
+        name: httpd
+        state: latest
+
+    - name: Start httpd service
+      ansible.builtin.service:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: Enable web ports
+      ansible.builtin.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - 80/tcp
+        - 443/tcp
+
+    - name: Welcome to Web Server
+      ansible.builtin.copy:
+        content: "Welcome to my web server"
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: '0644'

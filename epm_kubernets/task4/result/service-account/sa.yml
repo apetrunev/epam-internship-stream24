@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-namespace-admin
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role-sa-namespace-admin
+  namespace: default
+rules:
+# grant full access
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: binding-sa-namespace-admin
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: sa-namespace-admin
+  namespace: default
+roleRef:
+  kind: Role
+  name: role-sa-namepspace-admin
+  apiGroup: rbac.authorization.k8s.io

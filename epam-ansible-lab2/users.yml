@@ -1,0 +1,19 @@
+---
+- name: Add users to a system
+  hosts: node1.example.com
+  vars_files:
+    - vars/users
+  tasks:
+    - name: Adding users
+      no_log: true
+      ansible.builtin.user:
+        name: "{{ item.value.username }}"
+        comment: "{{ item.value.comment }}"
+        shell: "{{ item.value.shell }}"
+        home: "{{ item.value.homedir }}"
+        state: present
+        expires: -1
+        update_password: on_create
+        password: "{{ item.value.password | password_hash('sha512') }}"
+      with_dict: "{{ users }}"
+         

@@ -1,0 +1,5 @@
+---
+- name: Apache web server
+  hosts: node1.example.com
+  roles:
+    - vsftpd

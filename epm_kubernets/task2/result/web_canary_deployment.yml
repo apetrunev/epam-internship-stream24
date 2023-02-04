@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+    version: v1
+  name: canary-deployment-web-v1
+spec:
+  replicas: 3
+  # select which pods to manage
+  selector:
+    matchLabels:
+      app: web
+      version: v1
+  template:
+    # the way we label pods
+    metadata:
+      labels:
+        app: web
+        version: v1
+    # Specify what pod runs
+    spec:
+      containers:
+        - image: nginx:latest
+          name: nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-default-conf
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: nginx-default-conf
+          configMap:
+            name: nginx-default-conf-cm-v1
+---
+apiVersion: v1
+data:
+  default.conf: |-
+    server {
+      listen 80 default_server;
+      server_name _;
+      default_type text/plain;
+      location / {
+        return 200 '$hostname\n response from V1';
+      }
+    }
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: nginx-default-conf-cm-v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web
+    version: v1
+  name: canary-service-web-v1
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+    version: v1
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+

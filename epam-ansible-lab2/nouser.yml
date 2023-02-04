@@ -1,0 +1,13 @@
+---
+- name: lab 2
+  hosts: node1.example.com
+  vars_files:
+    - vars/users
+  tasks:
+    - name: Deleting users
+      no_log: true
+      ansible.builtin.user:
+        name: "{{ item.value.username }}"
+        remove: yes
+        state: absent
+      with_dict: "{{ users }}"

@@ -1,0 +1,31 @@
+---
+- name: Playbook for lab 1 task 3
+  hosts: node1.example.com
+  remote_user: ansible
+  become: yes
+  tasks:
+    - name: Backing up /etc/default/grub
+      ansible.builtin.copy:
+        src: /etc/default/grub
+        dest: /etc/default/grub.original
+        remote_src: yes
+        force: no
+
+    - name: Set net.ifnames=0 or 1 to /etc/default/grub
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        state: present
+        regexp: '^(GRUB_CMDLINE_LINUX=.*)(net\.ifnames=[0-9]*)(.*)'
+        line: '\1net.ifnames=0\3'
+        backrefs: yes
+
+    - name: Set biosdevname=0 or 1 to /etc/default/grub
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        state: present
+        regexp: '^(GRUB_CMDLINE_LINUX=.*)(biosdevname=[0-9]*)(.*)'
+        line: '\1biosdevname=0\3'
+        backrefs: yes
+
+    - name: "Generate new grub.cfg"
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg

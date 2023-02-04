@@ -1,0 +1,19 @@
+users:
+  alice:
+    username: alice
+    comment: alice@example.com
+    homedir: /home/alice
+    shell: /bin/bash
+    password: "{{ alice_password }}"
+  bob:
+    username: bob
+    comment: bob@example.com
+    homedir: /home/bob
+    shell: /bin/bash
+    password: "{{ bob_password }}"
+  carol:
+    username: carol
+    comment: carol@example.com
+    homedir: /home/carol
+    shell: /bin/bash
+    password: "{{ carol_password }}"

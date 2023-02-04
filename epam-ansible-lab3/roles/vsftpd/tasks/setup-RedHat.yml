@@ -1,0 +1,74 @@
+---
+- name: Install SELinux dependencies
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python3-libselinux
+    - python3-libsemanage
+    - python3-policycoreutils
+
+- name: Install vsftpd
+  ansible.builtin.yum:
+    name: vsftpd
+    state: latest
+
+- name: Make sure firewalld and vsftpd are enabled
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop:
+    - firewalld
+    - vsftpd
+
+- name: Configure vsftpd
+  ansible.builtin.template:
+    src: vsftpd.conf.j2
+    dest: "{{ vsftpd_config_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart vsftpd
+
+- name: Create ftp upload folder ans set permissions
+  ansible.builtin.file:
+    path: /var/ftp/pub/upload
+    owner: ftp
+    group: ftp
+    state: directory
+    mode: 0777
+
+- name: Allow traffice on vsftpd ports
+  ansible.builtin.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - 20/tcp
+    - 21/tcp
+  notify: restart firewalld
+
+- name: Set SElinux anonymous upload
+  seboolean:
+    name: ftpd_anon_write
+    state: true
+    persistent: true
+
+- name: Allow to write files in /var/ftp/pub
+  community.general.sefcontext:
+    target: "/var/ftp(/*)?"
+    setype: public_content_t
+    state: present
+
+- name: Apply new SELinux file context to filesystem
+  ansible.builtin.command: restorecon -F -R -v /var/ftp
+
+- name: Allow to write files in /var/ftp/pub/upload
+  community.general.sefcontext:
+    target: "/var/ftp/pub/upload(/.*)?"
+    setype: public_content_rw_t
+    state: present
+
+- name: Apply new SELinux file context to filesystem
+  ansible.builtin.command: restorecon -F -R -v /var/ftp/pub/upload

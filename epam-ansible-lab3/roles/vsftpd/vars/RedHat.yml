@@ -1,0 +1,8 @@
+---
+vsftpd_anonymous_enable: YES
+vsftpd_anon_upload_enable: YES
+vsftpd_anon_mkdir_write_enable: YES
+vsftpd_no_anon_password: YES
+vsftpd_chown_uploads: YES
+vsftpd_chown_username: ftp
+vsftpd_config_path: /etc/vsftpd/vsftpd.conf

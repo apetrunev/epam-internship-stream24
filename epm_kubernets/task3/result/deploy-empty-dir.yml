@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-empty-dir
+  labels:
+    app: pod-empty-dir
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      storage: empty-dir
+  template:
+    metadata:
+      labels:
+        storage: empty-dir
+    spec:
+      containers:
+      - name: nginx-empty
+        image: nginx:alpine
+        volumeMounts:
+        - name: nginx-tmp-storage
+          mountPath: /opt/data-one
+          readOnly: false
+      - name: debian-empty
+        image: debian:10-slim
+        command: ["sh", "-c", "while true; do sleep 1000; done"]
+        volumeMounts:
+        - mountPath: /opt/data-second
+          name: nginx-tmp-storage
+          readOnly: false
+      volumes:
+      - name: nginx-tmp-storage
+        emptyDir: {}

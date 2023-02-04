@@ -1,0 +1,2 @@
+ansible-playbook -i hosts --vault-pass-file passwd users.yml
+ansible-playbook -i hosts --vault-pass-file passwd nouser.yml

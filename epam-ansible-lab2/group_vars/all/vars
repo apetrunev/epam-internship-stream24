@@ -1,0 +1,3 @@
+alice_password: "{{ vault_alice_password }}"
+bob_password: "{{ vault_bob_password }}"
+carol_password: "{{ vault_carol_password }}"
